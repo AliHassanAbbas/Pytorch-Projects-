@@ -1,105 +1,132 @@
 # Image Generation with GANs in PyTorch
 
-This directory contains hands-on implementations of two foundational **Generative Adversarial Network (GAN)** approaches: a fully connected GAN and a Deep Convolutional GAN (DCGAN). Both models are implemented with PyTorch and trained from scratch.
+This folder contains five educational PyTorch notebooks exploring several Generative Adversarial Network (GAN) architectures and objectives. The projects progress from a fully connected GAN on MNIST to convolutional GAN variants trained on CIFAR-10.
+
+All notebooks define their own generator and discriminator/critic, training loops, optimizers and image-sampling routines. They are standalone experiments rather than one shared software package.
 
 ## Projects
 
 ### 1. Vanilla GAN — MNIST
 
-[Open 0_Image_Generation_with_Gans_in_pytorch.ipynb](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/0_Image_Generation_with_Gans_in_pytorch.ipynb)
+[Open notebook](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/0_Image_Generation_with_Gans_in_pytorch.ipynb)
 
-A fully connected GAN that learns to generate 28×28 grayscale digit images from the MNIST dataset.
+A fully connected GAN that learns to generate 28×28 grayscale handwritten-digit images.
 
-**Model design**
-- Generator: fully connected layers mapping a 100-dimensional latent vector through hidden layers to 784 output values.
-- Discriminator: fully connected classifier that distinguishes real MNIST images from generated samples.
-- LeakyReLU hidden activations, Dropout in the discriminator, and Tanh generator output.
-
-**Training setup**
-- Dataset: MNIST training split
-- Image representation: flattened 28×28 grayscale images
-- Batch size: 64
-- Latent dimension: 100
-- Epochs: 100
-- Loss: Binary Cross Entropy
-- Optimizers: separate Adam optimizers for generator and discriminator
-- Learning rate: 0.0002; betas: (0.5, 0.999)
+- **Dataset:** MNIST training split
+- **Generator:** fully connected layers 100 → 256 → 512 → 1024 → 784, LeakyReLU hidden activations and Tanh output
+- **Discriminator:** fully connected network with LeakyReLU, Dropout(0.3) and Sigmoid output
+- **Objective:** Binary Cross Entropy (BCE)
+- **Optimizers:** separate Adam optimizers, learning rate 0.0002 and betas (0.5, 0.999)
+- **Configuration:** batch size 64, latent dimension 100, 100 epochs
+- **Implementation details:** flattened image tensors, Gaussian latent vectors, alternating generator/discriminator updates and generated sample grids
 
 ### 2. Deep Convolutional GAN (DCGAN) — CIFAR-10
 
-[Open 1_Image_Generation_with_DCGAN_in_pytorch.ipynb](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/1_Image_Generation_with_DCGAN_in_pytorch.ipynb)
+[Open notebook](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/1_Image_Generation_with_DCGAN_in_pytorch.ipynb)
 
-A convolutional GAN that learns to generate 64×64 RGB images using the CIFAR-10 training dataset resized to 64×64.
+A convolutional GAN that generates 64×64 RGB images from 100-dimensional Gaussian noise.
 
-**Architecture**
-- **Generator:** accepts random latent noise shaped as [batch, 100, 1, 1] and uses a stack of transposed convolutions to progressively upsample it into 64×64 RGB images.
-- **Discriminator:** uses convolutional layers to progressively downsample RGB images and output a real/fake probability.
-- Batch Normalization is used in intermediate convolutional blocks.
-- ReLU activations are used in the generator; LeakyReLU activations are used in the discriminator.
-- Tanh is used at the generator output, matching the normalized image range.
+- **Dataset:** CIFAR-10 training split, resized to 64×64
+- **Generator:** ConvTranspose2d layers progressively upsample a [batch, 100, 1, 1] latent tensor; BatchNorm and ReLU in intermediate stages; Tanh output
+- **Discriminator:** Conv2d layers downsample RGB images; BatchNorm and LeakyReLU; Sigmoid probability output
+- **Objective:** BCE
+- **Optimizers:** separate Adam optimizers, learning rate 0.0002 and betas (0.5, 0.999)
+- **Configuration:** batch size 64, latent dimension 100, 20 epochs
+- **Implementation details:** DCGAN-style convolutional weight initialization and generated-image grids
 
-**Training setup**
-| Setting | Value |
-|---|---:|
-| Dataset | CIFAR-10 training split |
-| Image size | 64 × 64 × 3 |
-| Batch size | 64 |
-| Latent dimension | 100 |
-| Epochs | 20 |
-| Loss | Binary Cross Entropy |
-| Optimizers | Separate Adam optimizers |
-| Learning rate | 0.0002 |
-| Adam betas | (0.5, 0.999) |
-| Sample interval | Every 5 epochs |
-| Weight initialization | Normal initialization for convolution and BatchNorm layers |
+### 3. Least Squares GAN (LSGAN) — CIFAR-10
 
-Generated image grids are saved under `images/dcgan/` at the configured sample intervals.
+[Open notebook](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/2_Image_Generation_with_Least_Squares_GAN_in_pytorch.ipynb)
 
-## Concepts and workflow covered
+An LSGAN experiment that reuses a DCGAN-style convolutional generator and discriminator but changes the adversarial objective from BCE to least-squares losses.
 
-1. Load image datasets using `torchvision.datasets`.
-2. Resize, convert to tensors, and normalize image data.
-3. Build shuffled batches with PyTorch `DataLoader`.
-4. Sample random latent vectors from a Gaussian distribution.
-5. Implement generator and discriminator networks with `nn.Module` and `nn.Sequential`.
-6. Use dense layers in the vanilla GAN and convolutional layers in DCGAN.
-7. Define adversarial objectives with `nn.BCELoss`.
-8. Train the discriminator on real and generated images.
-9. Train the generator to produce samples classified as real.
-10. Manage gradient flow with `zero_grad()`, `backward()`, `step()`, `detach()`, and `torch.no_grad()`.
-11. Initialize model weights and configure independent Adam optimizers.
-12. Monitor losses and elapsed training time.
-13. Save and visualize generated image grids.
+- **Dataset and image size:** CIFAR-10 resized to 64×64 RGB
+- **Architecture:** convolutional generator/discriminator with transposed convolutions, BatchNorm, ReLU and LeakyReLU
+- **Objective:** least-squares losses computed with mean squared differences from real/fake target values; discriminator output is not passed through Sigmoid
+- **Optimizers:** separate Adam optimizers, learning rate 0.0002 and betas (0.5, 0.999)
+- **Configuration:** batch size 64, latent dimension 100, 15 epochs
+- **Key comparison:** changing the loss formulation while retaining a DCGAN-like network design
 
-## Technical skills demonstrated
+### 4. Wasserstein GAN (WGAN) — CIFAR-10
 
-- Generative Adversarial Networks (GANs) and DCGAN architecture
-- Convolutional neural network design for image generation
-- Transposed convolutions and learned upsampling
-- Convolutional feature extraction and spatial downsampling
-- Latent-space sampling and noise-to-image generation
-- PyTorch custom model classes, sequential modules, and tensor operations
-- Batch Normalization, ReLU, LeakyReLU, and Tanh
-- Adversarial Binary Cross Entropy objectives
-- Alternating optimization of two neural networks
-- Custom weight initialization
-- Gradient-flow control and training-loop implementation
-- TorchVision dataset loading and image preprocessing
-- GPU-aware training, reproducibility, loss monitoring, and visualization
+[Open notebook](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/3_Image_Generation_with_WGAN_in_pytorch.ipynb)
 
-## Run the notebooks
+A weight-clipped WGAN implementation that uses the Wasserstein critic objective rather than a sigmoid-based binary classifier.
 
-Open either notebook in Google Colab or Jupyter and execute its cells in order. The projects use PyTorch, TorchVision, NumPy, and Matplotlib. The datasets are downloaded automatically through TorchVision when required.
+- **Dataset and image size:** CIFAR-10 resized to 64×64 RGB
+- **Architecture:** convolutional generator and critic; critic outputs an unrestricted score (no Sigmoid)
+- **Critic objective:** mean score on generated images minus mean score on real images
+- **Generator objective:** negative mean critic score on generated images
+- **Optimizers:** RMSprop for both networks, learning rate 0.00005
+- **WGAN training strategy:** five critic updates per generator update (D_UPDATES = 5)
+- **Weight constraint:** critic parameters are clamped to [-0.01, 0.01] after critic updates
+- **Configuration:** batch size 64, latent dimension 100, 15 epochs
+- **Implementation details:** custom convolutional weight initialization and generated sample grids
 
-A CUDA-capable GPU is recommended, particularly for DCGAN training, but the notebooks select CPU when CUDA is unavailable.
+This notebook implements the original weight-clipping WGAN training approach, not WGAN-GP; it does not implement a gradient penalty.
 
-## Implementation notes
+### 5. Relativistic Average Least Squares GAN (RaLSGAN) — CIFAR-10
 
-- Both notebooks are educational implementations and document the code as currently written.
-- In both training loops, `next(iter(iterator))` is called inside the loop. This creates a fresh DataLoader iterator for each batch request instead of traversing one persistent iterator through the dataset. For conventional epoch semantics, use `for x, _ in iterator:` and perform the discriminator and generator updates for each batch.
-- The DCGAN notebook uses fixed-size real/fake label tensors of length 64. Its current repeated fresh-iterator pattern produces full batches in this setup; if the loop is refactored to traverse the DataLoader normally, handle a smaller final batch by creating labels based on the actual batch size.
-- The notebooks demonstrate foundational GAN training; they do not claim state-of-the-art image quality or production-ready training stability.
+[Open notebook](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/4_Image_Generation_with_RLSGAN_in_pytorch.ipynb)
+
+A relativistic-average least-squares adversarial objective using a DCGAN-style convolutional generator and discriminator. The discriminator compares real and generated scores relative to the opposing batch's mean score.
+
+- **Dataset and image size:** CIFAR-10 resized to 64×64 RGB
+- **Architecture:** convolutional generator and discriminator with BatchNorm, ReLU and LeakyReLU
+- **Generator output:** raw image values; the Tanh layer is commented out in this notebook
+- **Discriminator output:** unrestricted scores; the Sigmoid layer is commented out
+- **Objective:** relativistic-average least-squares equations implemented directly using batch means and squared differences
+- **Optimizers:** separate Adam optimizers, learning rate 0.0001 and betas (0.5, 0.999)
+- **Configuration:** batch size 64, latent dimension 100, 100 epochs
+- **Implementation details:** custom convolutional weight initialization and per-epoch sample grids
+
+**Code note:** BCEWithLogitsLoss is instantiated in this notebook but is not used by the actual RaLSGAN loss calculations. The explicit relativistic-average least-squares expressions drive training.
+
+## Shared implementation patterns
+
+Across these notebooks, the code demonstrates:
+
+- Building custom models with torch.nn.Module and nn.Sequential
+- Designing fully connected and convolutional generators/discriminators
+- Mapping Gaussian latent noise into synthetic image tensors
+- Using ConvTranspose2d for upsampling and Conv2d for learned downsampling
+- Batch normalization, LeakyReLU, ReLU, Tanh and Sigmoid activations
+- Implementing BCE, least-squares, Wasserstein and relativistic-average least-squares objectives
+- Alternating optimization of generator and discriminator/critic networks
+- Managing gradient flow with torch.no_grad(), .detach(), and separate optimizer steps
+- Custom weight initialization, optimizer configuration and parameter constraints
+- Reproducibility through Python, NumPy and PyTorch random seeds
+- Selecting CUDA when available, timing epochs, monitoring losses and visualizing generated samples
+
+## Important implementation notes
+
+These are educational notebooks, so review the code carefully before treating them as production training pipelines.
+
+- The training loops commonly call next(iter(iterator)) inside the loop. This constructs a new DataLoader iterator each time rather than consuming one persistent iterator through the dataset. Consequently, the code does not perform a conventional full pass over distinct batches in each epoch. A production-quality revision should create one iterator per epoch and iterate over it directly.
+- Some notebooks create real/fake label tensors using the configured batch size. If the final batch is smaller, labels should be created using the actual batch dimension (or the loader should use drop_last=True).
+- The WGAN notebook uses weight clipping, the original WGAN constraint, and should not be described as WGAN-GP.
+- The RaLSGAN notebook defines a BCE-with-logits loss object but trains with its explicit relativistic least-squares equations instead.
+
+## Running the notebooks
+
+1. Open a notebook in Jupyter or Google Colab.
+2. Install PyTorch, TorchVision, NumPy and Matplotlib if they are not already available.
+3. Run the cells in order. The notebooks download MNIST or CIFAR-10 through TorchVision.
+4. A CUDA GPU is used automatically when available; otherwise, the code falls back to CPU.
+5. Generated image grids are saved under the corresponding images/ subdirectory.
+
+Exact runtime and memory requirements depend on the selected hardware and notebook.
+
+## Technical expertise demonstrated
+
+**PyTorch and deep learning:** custom neural-network modules, tensor shape management, convolutional architectures, autograd, gradient control, optimizer configuration and training loops.
+
+**Generative modelling:** GAN fundamentals, DCGAN, LSGAN, weight-clipped WGAN and RaLSGAN; latent-space sampling; adversarial objectives; generator/critic dynamics.
+
+**Computer vision:** MNIST/CIFAR-10 input pipelines, image resizing and normalization, grayscale and RGB tensor handling, image synthesis and visualization.
+
+**Experimentation:** random seeding, initialization strategies, training diagnostics, epoch timing, sample-grid generation and comparison of alternative loss functions.
 
 ## Author
 
-Ali Hassan Abbas | [GitHub](https://github.com/AliHassanAbbas)
+Ali Hassan Abbas · [GitHub](https://github.com/AliHassanAbbas) · [Repository](https://github.com/AliHassanAbbas/Pytorch-Projects-)
