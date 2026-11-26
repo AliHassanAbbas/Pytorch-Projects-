@@ -73,3 +73,18 @@ A from-scratch PyTorch implementation of a Deep Convolutional Generative Adversa
 - Batch Normalization and DCGAN-style weight initialization
 - Gaussian latent-noise sampling and RGB image generation
 - Adversarial training with separate generator/discriminator optimizers
+
+
+## GAN Variants for Image Generation — PyTorch
+
+This repository includes five implementations exploring different adversarial objectives:
+
+- **Vanilla GAN:** fully connected generator/discriminator trained on MNIST with Binary Cross Entropy.
+- **DCGAN:** convolutional image generation on 64×64 CIFAR-10 with transposed convolutions, BatchNorm and BCE.
+- **LSGAN:** DCGAN-style architecture with least-squares adversarial losses.
+- **WGAN:** Wasserstein critic objective, five critic updates per generator update, RMSprop and weight clipping. This is the original clipped WGAN approach, not WGAN-GP.
+- **RaLSGAN:** relativistic-average least-squares objectives using batch-mean comparisons and an unrestricted discriminator score.
+
+The collection demonstrates PyTorch model construction, convolutional upsampling/downsampling, latent-noise sampling, custom initialization, autograd/gradient-flow control, adversarial optimization, dataset preprocessing, reproducibility and generated-image visualization.
+
+[Read the complete GAN project documentation](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/README.md) · [Browse all five notebooks](https://github.com/AliHassanAbbas/Pytorch-Projects-/tree/main/4%20Image%20Generation%28generative%20models%29%20pytorch)
