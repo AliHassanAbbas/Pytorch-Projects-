@@ -57,3 +57,19 @@ A PyTorch implementation of a fully connected Generative Adversarial Network tra
 - Binary Cross Entropy and Adam optimization
 - Alternating optimization and gradient-flow control
 - Reproducibility, loss monitoring and sample visualization
+
+
+## Deep Convolutional GAN (DCGAN) — CIFAR-10
+
+A from-scratch PyTorch implementation of a Deep Convolutional Generative Adversarial Network. The generator maps 100-dimensional Gaussian noise to 64×64 RGB images using transposed convolutions, while the discriminator uses convolutional layers to distinguish real CIFAR-10 images from generated samples. Includes Batch Normalization, custom weight initialization, ReLU/LeakyReLU/Tanh activations, Binary Cross Entropy objectives, separate Adam optimizers, gradient-flow management, and generated image grids.
+
+[Read the image-generation README](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/README.md) · [Open the DCGAN notebook](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/1_Image_Generation_with_DCGAN_in_pytorch.ipynb)
+
+### Additional Generative Modelling Skills
+
+- Deep Convolutional GANs and convolutional image synthesis
+- Transposed convolution and progressive spatial upsampling
+- Convolutional feature extraction and downsampling
+- Batch Normalization and DCGAN-style weight initialization
+- Gaussian latent-noise sampling and RGB image generation
+- Adversarial training with separate generator/discriminator optimizers
