@@ -21,3 +21,22 @@ An educational collection, not one unified Python package. Model architectures, 
 
 ## Author
 Ali Hassan Abbas | [GitHub](https://github.com/AliHassanAbbas)
+
+## Linear Regression with PyTorch
+
+A hands-on linear regression notebook that predicts exam scores from hours studied. It covers NumPy data preparation, tensor conversion, model construction with `nn.Module` and `nn.Linear`, MSE loss, SGD, a manual training loop, evaluation/inference, visualization, prediction on a new input, and saving model parameters with `state_dict`.
+
+
+[Read the project README](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/0%20Linear%20Regression/README.md) · [Open the notebook](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/0%20Linear%20Regression/0_Basic_Linear_Regression.ipynb)
+
+
+## PyTorch Fundamentals Demonstrated
+
+- Supervised learning fundamentals and linear regression
+- NumPy data preparation and PyTorch tensors
+- `nn.Module`, `nn.Linear`, parameters, weights and bias
+- Forward passes, loss calculation, backpropagation and SGD updates
+- Manual training loops and optimizer workflows
+- Model evaluation, inference and gradient disabling
+- Data visualization and prediction plots
+- Saving and restoring model weights with `state_dict`
