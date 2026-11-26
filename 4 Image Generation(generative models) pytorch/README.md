@@ -1,93 +1,104 @@
-# Image Generation with a Generative Adversarial Network (GAN) in PyTorch
+# Image Generation with GANs in PyTorch
 
-This notebook implements a **fully connected, vanilla GAN** that learns to generate handwritten digit-like images using the MNIST dataset. It defines the generator and discriminator as separate PyTorch modules and trains them adversarially.
+This directory contains hands-on implementations of two foundational **Generative Adversarial Network (GAN)** approaches: a fully connected GAN and a Deep Convolutional GAN (DCGAN). Both models are implemented with PyTorch and trained from scratch.
 
-## Notebook
+## Projects
+
+### 1. Vanilla GAN — MNIST
 
 [Open 0_Image_Generation_with_Gans_in_pytorch.ipynb](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/0_Image_Generation_with_Gans_in_pytorch.ipynb)
 
-## Model overview
+A fully connected GAN that learns to generate 28×28 grayscale digit images from the MNIST dataset.
 
-A GAN consists of two networks trained in opposition:
+**Model design**
+- Generator: fully connected layers mapping a 100-dimensional latent vector through hidden layers to 784 output values.
+- Discriminator: fully connected classifier that distinguishes real MNIST images from generated samples.
+- LeakyReLU hidden activations, Dropout in the discriminator, and Tanh generator output.
 
-- **Generator (G):** maps a random latent vector to a synthetic image.
-- **Discriminator (D):** estimates whether an input image is real (from MNIST) or generated.
-
-The generator uses fully connected layers:
-
-`100 → 256 → 512 → 1024 → 784`
-
-with LeakyReLU hidden activations and Tanh output. The discriminator uses:
-
-`784 → 1024 → 512 → 256 → 1`
-
-with LeakyReLU, Dropout and Sigmoid output.
-
-This is a dense, fully connected GAN operating on flattened 28×28 grayscale images; it is not a convolutional DCGAN.
-
-## Dataset and preprocessing
-
-- Dataset: MNIST training split (downloaded through `torchvision.datasets.MNIST`)
-- Image size: 28×28 grayscale (784 flattened features)
-- Transform: `ToTensor()` followed by normalization with mean 0.5 and standard deviation 0.5
+**Training setup**
+- Dataset: MNIST training split
+- Image representation: flattened 28×28 grayscale images
 - Batch size: 64
 - Latent dimension: 100
-- Device: CUDA when available, otherwise CPU
-- Random seeds are set for NumPy, PyTorch and Python's `random` module.
+- Epochs: 100
+- Loss: Binary Cross Entropy
+- Optimizers: separate Adam optimizers for generator and discriminator
+- Learning rate: 0.0002; betas: (0.5, 0.999)
 
-## Training configuration
+### 2. Deep Convolutional GAN (DCGAN) — CIFAR-10
 
+[Open 1_Image_Generation_with_DCGAN_in_pytorch.ipynb](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/1_Image_Generation_with_DCGAN_in_pytorch.ipynb)
+
+A convolutional GAN that learns to generate 64×64 RGB images using the CIFAR-10 training dataset resized to 64×64.
+
+**Architecture**
+- **Generator:** accepts random latent noise shaped as [batch, 100, 1, 1] and uses a stack of transposed convolutions to progressively upsample it into 64×64 RGB images.
+- **Discriminator:** uses convolutional layers to progressively downsample RGB images and output a real/fake probability.
+- Batch Normalization is used in intermediate convolutional blocks.
+- ReLU activations are used in the generator; LeakyReLU activations are used in the discriminator.
+- Tanh is used at the generator output, matching the normalized image range.
+
+**Training setup**
 | Setting | Value |
 |---|---:|
-| Epochs | 100 |
+| Dataset | CIFAR-10 training split |
+| Image size | 64 × 64 × 3 |
 | Batch size | 64 |
 | Latent dimension | 100 |
-| Loss | Binary Cross Entropy (`nn.BCELoss`) |
-| Optimizers | Separate Adam optimizers for G and D |
+| Epochs | 20 |
+| Loss | Binary Cross Entropy |
+| Optimizers | Separate Adam optimizers |
 | Learning rate | 0.0002 |
 | Adam betas | (0.5, 0.999) |
 | Sample interval | Every 5 epochs |
+| Weight initialization | Normal initialization for convolution and BatchNorm layers |
 
-The discriminator is trained to classify real images as 1 and generated images as 0. The generator is trained to make generated images receive the real label from the discriminator. Generated image grids are saved under `images/gan/` during training.
+Generated image grids are saved under `images/dcgan/` at the configured sample intervals.
 
-## Workflow covered
+## Concepts and workflow covered
 
-1. Load and normalize MNIST images with TorchVision
-2. Create a shuffled PyTorch `DataLoader`
-3. Sample random latent vectors
-4. Implement generator and discriminator using `nn.Module` and `nn.Sequential`
-5. Define adversarial binary-cross-entropy objectives
-6. Configure independent Adam optimizers
-7. Update discriminator and generator in alternating steps
-8. Use `torch.no_grad()` / detach to control gradient flow during discriminator training and sample generation
-9. Track losses and elapsed epoch time
-10. Save and visualize generated image grids
-
-## Run
-
-Open the notebook in Google Colab or Jupyter and execute cells in order. The notebook uses PyTorch, TorchVision, NumPy and Matplotlib. MNIST is downloaded automatically by TorchVision. A CUDA GPU is optional; the code selects CUDA when available.
+1. Load image datasets using `torchvision.datasets`.
+2. Resize, convert to tensors, and normalize image data.
+3. Build shuffled batches with PyTorch `DataLoader`.
+4. Sample random latent vectors from a Gaussian distribution.
+5. Implement generator and discriminator networks with `nn.Module` and `nn.Sequential`.
+6. Use dense layers in the vanilla GAN and convolutional layers in DCGAN.
+7. Define adversarial objectives with `nn.BCELoss`.
+8. Train the discriminator on real and generated images.
+9. Train the generator to produce samples classified as real.
+10. Manage gradient flow with `zero_grad()`, `backward()`, `step()`, `detach()`, and `torch.no_grad()`.
+11. Initialize model weights and configure independent Adam optimizers.
+12. Monitor losses and elapsed training time.
+13. Save and visualize generated image grids.
 
 ## Technical skills demonstrated
 
-- Generative Adversarial Networks and adversarial optimization
-- Designing separate generator and discriminator networks
-- PyTorch custom modules, sequential layers and activation functions
+- Generative Adversarial Networks (GANs) and DCGAN architecture
+- Convolutional neural network design for image generation
+- Transposed convolutions and learned upsampling
+- Convolutional feature extraction and spatial downsampling
 - Latent-space sampling and noise-to-image generation
-- Tensor reshaping and flattened image representations
-- Dataset loading, preprocessing and normalization with TorchVision
-- Binary cross-entropy objectives and Adam optimization
+- PyTorch custom model classes, sequential modules, and tensor operations
+- Batch Normalization, ReLU, LeakyReLU, and Tanh
+- Adversarial Binary Cross Entropy objectives
 - Alternating optimization of two neural networks
-- Gradient management with `zero_grad()`, `backward()`, `step()`, `detach()` and `torch.no_grad()`
-- Reproducibility through random seed configuration
-- Monitoring training losses and visualizing generated samples
+- Custom weight initialization
+- Gradient-flow control and training-loop implementation
+- TorchVision dataset loading and image preprocessing
+- GPU-aware training, reproducibility, loss monitoring, and visualization
 
-## Implementation note
+## Run the notebooks
 
-The notebook's inner training loop calls `next(iter(iterator))` repeatedly rather than iterating once over the existing DataLoader iterator. This repeatedly creates fresh iterators and draws a new first batch each time, instead of traversing one complete shuffled pass through the dataset per epoch. For conventional epoch semantics, use `for x, _ in iterator:` and perform both discriminator and generator updates for each batch. The README documents the notebook as written and does not silently change its training code.
+Open either notebook in Google Colab or Jupyter and execute its cells in order. The projects use PyTorch, TorchVision, NumPy, and Matplotlib. The datasets are downloaded automatically through TorchVision when required.
 
-## Scope
+A CUDA-capable GPU is recommended, particularly for DCGAN training, but the notebooks select CPU when CUDA is unavailable.
 
-This is an educational vanilla GAN experiment on MNIST. It demonstrates the adversarial training mechanism and image-sample generation; it should not be described as a state-of-the-art image generator or as a convolutional GAN.
+## Implementation notes
+
+- Both notebooks are educational implementations and document the code as currently written.
+- In both training loops, `next(iter(iterator))` is called inside the loop. This creates a fresh DataLoader iterator for each batch request instead of traversing one persistent iterator through the dataset. For conventional epoch semantics, use `for x, _ in iterator:` and perform the discriminator and generator updates for each batch.
+- The DCGAN notebook uses fixed-size real/fake label tensors of length 64. Its current repeated fresh-iterator pattern produces full batches in this setup; if the loop is refactored to traverse the DataLoader normally, handle a smaller final batch by creating labels based on the actual batch size.
+- The notebooks demonstrate foundational GAN training; they do not claim state-of-the-art image quality or production-ready training stability.
 
 ## Author
 
