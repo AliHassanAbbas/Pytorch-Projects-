@@ -130,3 +130,16 @@ Exact runtime and memory requirements depend on the selected hardware and notebo
 ## Author
 
 Ali Hassan Abbas · [GitHub](https://github.com/AliHassanAbbas) · [Repository](https://github.com/AliHassanAbbas/Pytorch-Projects-)
+
+## Further code-review observations
+
+The following points are worth understanding when studying or extending these implementations:
+
+- **WGAN critic architecture:** the notebook uses BatchNorm in the critic as well as weight clipping. BatchNorm makes a sample's score depend on other samples in the batch, which is a known mismatch with the usual WGAN critic assumptions. For a more faithful WGAN experiment, consider removing BatchNorm from the critic and compare training behaviour.
+- **RaLSGAN output range:** the CIFAR-10 images are normalized to approximately [-1, 1], but the generator's final Tanh layer is commented out. This means generated pixels are not explicitly constrained to the same range as real images. Enabling Tanh is a useful controlled experiment, but it changes the current implementation and should be evaluated rather than silently assumed.
+- **RaLSGAN loss implementation:** the notebook computes relativistic-average least-squares terms directly from real and fake discriminator batch means. The instantiated `BCEWithLogitsLoss` is not part of the active optimization path.
+- **Batch-size handling:** fixed-size real/fake target tensors in the Vanilla GAN, DCGAN and LSGAN can mismatch the final smaller batch. Build targets from the current batch size or configure the DataLoader with `drop_last=True`.
+- **DataLoader iteration:** the notebooks repeatedly call `next(iter(iterator))` inside a loop. This restarts a DataLoader iterator rather than consuming a single iterator through the epoch. Prefer `for x, _ in iterator:` for a conventional epoch over the shuffled dataset.
+- **WGAN variant naming:** this is the original weight-clipped WGAN approach. There is no gradient penalty, so it should not be labelled WGAN-GP.
+
+These are review observations, not claims that the notebooks have been modified. The notebooks remain the original educational implementations.
