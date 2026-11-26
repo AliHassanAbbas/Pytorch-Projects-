@@ -40,3 +40,20 @@ A hands-on linear regression notebook that predicts exam scores from hours studi
 - Model evaluation, inference and gradient disabling
 - Data visualization and prediction plots
 - Saving and restoring model weights with `state_dict`
+
+
+## Image Generation with a Vanilla GAN
+
+A PyTorch implementation of a fully connected Generative Adversarial Network trained on MNIST. Includes separate generator and discriminator modules, latent-noise sampling, adversarial Binary Cross Entropy losses, alternating Adam optimization, gradient-flow management, and generated image visualization.
+
+[Read the GAN project README](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/README.md) · [Open the GAN notebook](https://github.com/AliHassanAbbas/Pytorch-Projects-/blob/main/4%20Image%20Generation%28generative%20models%29%20pytorch/0_Image_Generation_with_Gans_in_pytorch.ipynb)
+
+### Generative Modelling Skills Demonstrated
+
+- GAN architecture and adversarial learning
+- Generator/discriminator design with PyTorch
+- Latent-space sampling and image generation
+- MNIST preprocessing and tensor reshaping
+- Binary Cross Entropy and Adam optimization
+- Alternating optimization and gradient-flow control
+- Reproducibility, loss monitoring and sample visualization
